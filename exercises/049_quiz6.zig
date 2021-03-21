@@ -1,0 +1,97 @@
+//
+//    "Trunks and tails
+//     Are handy things"
+
+//     from Holding Hands
+//       by Lenore M. Link
+//
+// Now that we have tails all figured out, can you implement trunks?
+//
+const std = @import("std");
+
+const Elephant = struct {
+    letter: u8,
+    tail: ?*Elephant = null,
+    trunk: ?*Elephant = null,
+    visited: bool = false,
+
+    // Elephant tail methods!
+    pub fn getTail(self: *Elephant) *Elephant { // returns the elephant's tail (a pointer to the next elephant)
+        return self.tail.?; // Remember, this is means "orelse unreachable"
+    }
+
+    pub fn hasTail(self: *Elephant) bool {
+        return (self.tail != null);
+    }
+
+    // Your Elephant trunk methods go here!
+    // ---------------------------------------------------
+
+    pub fn getTrunk(self: *Elephant) *Elephant { // returns the elephant's trunk (a pointer to the previous elephant)
+        return self.trunk.?; // orelse unreachable
+    }
+
+    pub fn hasTrunk(self: *Elephant) bool {
+        return (self.trunk != null);
+    }
+
+    // ---------------------------------------------------
+
+    pub fn visit(self: *Elephant) void {
+        self.visited = true;
+    }
+
+    pub fn print(self: *Elephant) void {
+        // Prints elephant letter and [v]isited
+        var v: u8 = if (self.visited) 'v' else ' ';
+        std.debug.print("{u}{u} ", .{ self.letter, v });
+    }
+};
+
+pub fn main() void {
+    var elephantA = Elephant{ .letter = 'A' };
+    var elephantB = Elephant{ .letter = 'B' };
+    var elephantC = Elephant{ .letter = 'C' };
+
+    // Link the elephants so that each tail "points" to the next.
+    elephantA.tail = &elephantB;
+    elephantB.tail = &elephantC;
+
+    // And link the elephants so that each trunk "points" to the previous.
+    elephantB.trunk = &elephantA;
+    elephantC.trunk = &elephantB;
+
+    visitElephants(&elephantA);
+
+    std.debug.print("\n", .{});
+}
+
+// This function visits all elephants twice, tails to trunks.
+fn visitElephants(first_elephant: *Elephant) void {
+    var e = first_elephant;
+
+    // Follow the tails! - loop around tails (going from the first elephant to the last)
+    while (true) {
+        e.print();
+        e.visit();
+
+        // Get the next elephant or stop. - keep going as long as the current elephant has a tail
+        if (e.hasTail()) {
+            e = e.getTail();
+        } else {
+            break;
+        }
+    }
+
+    // Follow the trunks! - loop around trunks (going back to first elephant)
+    while (true) {
+        e.print();
+
+        // Get the previous elephant or stop. - keep going as long as the current elephant has a trunk
+        if (e.hasTrunk()) {
+            e = e.getTrunk();
+        } else {
+            break;
+        }
+    }
+}
