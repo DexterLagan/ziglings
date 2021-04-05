@@ -20,6 +20,17 @@ const print = std.debug.print;
 // d-r---         3/26/2021   5:16 PM                Searches
 // d-r---          4/1/2021   9:13 AM                Videos
 
+/// file descriptor structure
+const file_descriptor = struct {
+    name: []u8,
+    path: []u8,
+    size: u64,
+    mode: u64,
+    creation_time: i64,
+    access_time: i64,
+    modif_time: i64,
+};
+
 pub fn main() anyerror!void {
     var entry_count: usize = 0;
     const dir = try std.fs.cwd().openDir(".", .{ .iterate = true });
@@ -29,6 +40,9 @@ pub fn main() anyerror!void {
             const file = try std.fs.cwd().openFile(entry.name, .{ .read = true });
             defer file.close();
             const stat = try file.stat();
+
+
+
             print("{s} - {}\n", .{ entry.name, stat.size });
         }
         entry_count += 1;
